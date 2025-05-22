@@ -1,11 +1,7 @@
-// import { useSelector } from "react-redux";
-// import CreateUser from "../features/user/CreateUser";
-// import Button from "./Button";
+import { Link } from "react-router-dom";
 import pizzaImage from "../assets/chad-montano-MqT0asuoIcU-unsplash.jpg";
 
 function Home() {
-  // const username = useSelector((state) => state.user.username);
-
   return (
     <div className="my-10 flex flex-col items-center gap-8 px-4 sm:my-16 md:flex-row md:items-center md:justify-center">
       {/* Texto */}
@@ -18,15 +14,13 @@ function Home() {
           </span>
         </h1>
 
-        {/* 
-        {username === "" ? (
-          <CreateUser />
-        ) : (
-          <Button type="primary" to="/menu">
-            Continue ordering, {username}
-          </Button>
-        )} 
-        */}
+        {/* Botão que redireciona para o menu */}
+        <Link
+          to="/menu"
+          className="inline-block rounded-full bg-yellow-400 px-6 py-3 font-semibold uppercase text-stone-800 shadow-md transition hover:bg-yellow-300"
+        >
+          Ver Cardápio
+        </Link>
       </div>
 
       {/* Imagem como background */}
