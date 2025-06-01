@@ -30,6 +30,7 @@ function FormLogin({ showLogin, onClose }) {
         {
           email: form.email,
           senha: form.senha,
+        
         }
       );
 
@@ -38,12 +39,11 @@ function FormLogin({ showLogin, onClose }) {
 
       // 1) Armazena o token no localStorage (ou cookies, conforme necessidade)
       localStorage.setItem("token", token);
-      localStorage.setItem(
-        "user",
-        JSON.stringify({ id: usuario.id, nome: usuario.nome, email: usuario.email })
-      );
+      localStorage.setItem("user", JSON.stringify(usuario));
 
       // 1) Fecha o modal imediatamente
+      console.log("Usuário retornado na resposta:", usuario);
+
       onClose();
 
       // 2) Redireciona para a página Home ("/") ou dashboard
