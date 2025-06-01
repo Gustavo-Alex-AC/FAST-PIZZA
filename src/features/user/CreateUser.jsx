@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 
 import Lottie from "lottie-react";
 import animacao from "../../assets/pizza-delivery.json";
@@ -8,6 +8,9 @@ import axios from 'axios';
 
 
 function CreateUser() {
+
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({ nome: '', sobrenome: '',casa:'',municipio:'',telefone:'',email:'',senha:'' });
 
   const handleChange = (e) => {
@@ -41,7 +44,7 @@ function CreateUser() {
       // 4) Envia os dados de Usuário
       await axios.post('http://localhost:3000/api/users', userPayload);
   
-      alert('Usuário e Endereço cadastrados com sucesso!');
+      //alert('Usuário e Endereço cadastrados com sucesso!');
       setForm({
         nome: '',
         sobrenome: '',
@@ -52,10 +55,16 @@ function CreateUser() {
         email: '',
         senha: ''
       });
+
+      navigate("/");
     } catch (error) {
-      console.error('Erro ao cadastrar:', error);
-      alert('Erro ao cadastrar usuário/endereço');
+      // Exibe a mensagem simples e também a mensagem SQL (se disponível)
+      console.error("Erro ao criar usuário:", error.message);
+      if (error.original && error.original.sqlMessage) {
+        console.error("Detalhe SQL:", error.original.sqlMessage);
+      }
     }
+    
   };
   
   
