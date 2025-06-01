@@ -1,62 +1,78 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  getCart as apiGetCart,
+  addToCart as apiAddToCart,
+  updateCartItem as apiUpdateCartItem,
+  deleteCartItem as apiDeleteCartItem,
+  clearCart as apiClearCart,
+} from "../../services/apiRestaurant";
 
+// THUNKS
+export const fetchCartFromServer = createAsyncThunk(
+  "cart/fetchCartFromServer",
+  async () => {
+    const data = await apiGetCart();
+    return data;
+  },
+);
+
+export const addItemToServer = createAsyncThunk(
+  "cart/addItemToServer",
+  async (item, { dispatch }) => {
+    await apiAddToCart(item);
+    dispatch(fetchCartFromServer()); // Atualiza local
+  },
+);
+
+export const updateItemQuantityOnServer = createAsyncThunk(
+  "cart/updateItemQuantityOnServer",
+  async ({ pizzaId, quantity }, { dispatch }) => {
+    await apiUpdateCartItem(pizzaId, quantity);
+    dispatch(fetchCartFromServer());
+  },
+);
+
+export const deleteItemFromServer = createAsyncThunk(
+  "cart/deleteItemFromServer",
+  async (pizzaId, { dispatch }) => {
+    await apiDeleteCartItem(pizzaId);
+    dispatch(fetchCartFromServer());
+  },
+);
+
+export const clearCartOnServer = createAsyncThunk(
+  "cart/clearCartOnServer",
+  async (_, { dispatch }) => {
+    await apiClearCart();
+    dispatch(fetchCartFromServer());
+  },
+);
+
+// STATE
 const initialState = {
   cart: [],
-  //   cart: [
-  //     {
-  //       pizzaId: 12,
-  //       name: "Mediterranean",
-  //       quantity: 2,
-  //       uniPrice: 16,
-  //       totalPrice: 32,
-  //     },
-  //   ],
 };
 
 const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    addItem(state, action) {
-      //payload = newItem
-      state.cart.push(action.payload);
-    },
-    deleteItem(state, action) {
-      //payload = pizzaId
-      state.cart = state.cart.filter((item) => item.pizzaId !== action.payload);
-    },
-    increaseItemQuantity(state, action) {
-      //payload = pizzaId
-      const item = state.cart.find((item) => item.pizzaId === action.payload);
-
-      item.quantity++;
-      item.totalPrice = item.quantity * item.unitPrice;
-    },
-    decreaseItemQuantity(state, action) {
-      //payload = pizzaId
-      const item = state.cart.find((item) => item.pizzaId === action.payload);
-
-      item.quantity--;
-      item.totalPrice = item.quantity * item.unitPrice;
-
-      if (item.quantity === 0) cartSlice.caseReducers.deleteItem(state, action);
-    },
     clearCart(state) {
       state.cart = [];
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(fetchCartFromServer.fulfilled, (state, action) => {
+      state.cart = action.payload;
+    });
+  },
 });
 
-export const {
-  addItem,
-  deleteItem,
-  increaseItemQuantity,
-  decreaseItemQuantity,
-  clearCart,
-} = cartSlice.actions;
-
+// ACTIONS
+export const { clearCart } = cartSlice.actions;
 export default cartSlice.reducer;
 
+// SELECTORS
 export const getCart = (state) => state.cart.cart;
 
 export const getTotalCartQuantity = (state) =>

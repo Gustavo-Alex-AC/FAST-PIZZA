@@ -1,24 +1,32 @@
-import Proptypes from "prop-types";
+import PropTypes from "prop-types";
 import Button from "../../ui/Button";
 import { useDispatch } from "react-redux";
-import { decreaseItemQuantity, increaseItemQuantity } from "./CartSlice";
+import { updateItemQuantityOnServer } from "./CartSlice";
 
 function UpdateItemQuantity({ pizzaId, currentQuantity }) {
   const dispatch = useDispatch();
 
+  const handleDecrease = () => {
+    if (currentQuantity > 1) {
+      dispatch(
+        updateItemQuantityOnServer({ pizzaId, quantity: currentQuantity - 1 }),
+      );
+    }
+  };
+
+  const handleIncrease = () => {
+    dispatch(
+      updateItemQuantityOnServer({ pizzaId, quantity: currentQuantity + 1 }),
+    );
+  };
+
   return (
-    <div className="flex gap-2 items-center md:gap-3">
-      <Button
-        type="round"
-        onClick={() => dispatch(decreaseItemQuantity(pizzaId))}
-      >
+    <div className="flex items-center gap-2 md:gap-3">
+      <Button type="round" onClick={handleDecrease}>
         -
       </Button>
       <span className="text-sm font-medium">{currentQuantity}</span>
-      <Button
-        type="round"
-        onClick={() => dispatch(increaseItemQuantity(pizzaId))}
-      >
+      <Button type="round" onClick={handleIncrease}>
         +
       </Button>
     </div>
@@ -26,8 +34,8 @@ function UpdateItemQuantity({ pizzaId, currentQuantity }) {
 }
 
 UpdateItemQuantity.propTypes = {
-  pizzaId: Proptypes.number.isRequired,
-  currentQuantity: Proptypes.number,
+  pizzaId: PropTypes.number.isRequired,
+  currentQuantity: PropTypes.number,
 };
 
 export default UpdateItemQuantity;

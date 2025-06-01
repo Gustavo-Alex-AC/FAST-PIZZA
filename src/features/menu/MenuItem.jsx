@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { formatCurrency } from "../../utils/helpers";
 import Button from "../../ui/Button";
 import { useDispatch, useSelector } from "react-redux";
-import { addItem, getCurrentQuantityById } from "../cart/CartSlice";
+import { getCurrentQuantityById, addItemToServer } from "../cart/CartSlice";
 import DeleteItem from "../cart/DeleteItem";
 import UpdateItemQuantity from "../cart/UpdateItemQuantity";
 
@@ -28,10 +28,10 @@ function MenuItem({ pizza }) {
       name,
       quantity: 1,
       unitPrice,
-      totalPrice: unitPrice * 1,
+      totalPrice: Number(unitPrice) * 1,
     };
 
-    dispatch(addItem(newItem));
+    dispatch(addItemToServer(newItem));
   }
 
   return (

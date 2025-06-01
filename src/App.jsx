@@ -9,6 +9,7 @@ import CreateOrder, {
 import AppLayout from "./ui/AppLayout";
 import Error from "./ui/Error";
 import { action as updateOrderAction } from "./features/order/UpdateOrder";
+import { fetchCartFromServer } from "./features/cart/CartSlice";
 
 const router = createBrowserRouter([
   {
@@ -23,7 +24,12 @@ const router = createBrowserRouter([
         loader: menuLoader,
         errorElement: <Error />,
       },
-      { path: "/cart", element: <Cart /> },
+      {
+        path: "/cart",
+        element: <Cart />,
+        loader: fetchCartFromServer,
+        errorElement: <Error />,
+      },
       {
         path: "/order/new",
         element: <CreateOrder />,
