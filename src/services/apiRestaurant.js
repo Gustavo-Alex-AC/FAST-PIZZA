@@ -64,26 +64,32 @@ export async function deleteCartItem(pizzaId) {
   if (!res.ok) throw new Error("Erro ao apagar item");
 }
 
-export async function clearCart() {
-  const res = await fetch(`${API_URL_I}/carrinho`, {
+export async function clearCart(userId) {
+  const res = await fetch(`${API_URL_I}/carrinho/limpar/${userId}`, {
     method: "DELETE",
   });
-  if (!res.ok) throw new Error("Erro ao limpar o carrinho");
+
+  if (!res.ok) {
+    const error = await res.json();
+    console.error("Detalhes do erro:", error);
+    throw new Error("Erro ao limpar o carrinho");
+  }
 }
 
 // Pedidos
 
+// 🔍 Obter pedido por ID
 export async function getOrder(id) {
-  const res = await fetch(`${API_URL}/order/${id}`);
-  if (!res.ok) throw Error(`Couldn't find order #${id}`);
+  const res = await fetch(`${API_URL_I}/pedidos/${id}`);
+  if (!res.ok) throw Error(`Não foi possível encontrar o pedido #${id}`);
 
-  const { data } = await res.json();
+  const data = await res.json();
   return data;
 }
 
 export async function createOrder(newOrder) {
   try {
-    const res = await fetch(`${API_URL}/order`, {
+    const res = await fetch(`${API_URL_I}/pedidos`, {
       method: "POST",
       body: JSON.stringify(newOrder),
       headers: {
@@ -91,27 +97,34 @@ export async function createOrder(newOrder) {
       },
     });
 
-    if (!res.ok) throw Error();
-    const { data } = await res.json();
-    return data;
-  } catch {
-    throw Error("Failed creating your order");
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || "Erro ao criar o pedido");
+    }
+
+    const data = await res.json();
+
+    // Fix is here ⬇
+    return { id: data.pedidoId };
+  } catch (err) {
+    console.error("Falha ao criar o pedido:", err);
+    throw err;
   }
 }
 
+// ✏️ Atualizar estado do pedido (por exemplo, de 'pendente' para 'entregue')
 export async function updateOrder(id, updateObj) {
   try {
-    const res = await fetch(`${API_URL}/order/${id}`, {
-      method: "PATCH",
+    const res = await fetch(`${API_URL_I}/pedidos/${id}`, {
+      method: "PUT", // Usamos PUT no controller, não PATCH
       body: JSON.stringify(updateObj),
       headers: {
         "Content-Type": "application/json",
       },
     });
 
-    if (!res.ok) throw Error();
-    // We don't need the data, so we don't return anything
+    if (!res.ok) throw Error("Erro ao atualizar o pedido");
   } catch (err) {
-    throw Error("Failed updating your order");
+    throw Error("Falha ao atualizar o pedido");
   }
 }

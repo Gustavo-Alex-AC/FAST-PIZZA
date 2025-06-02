@@ -1,6 +1,4 @@
-// Test ID: IIDSAT
-
-import { useFetcher, useLoaderData } from "react-router-dom";
+import { useLoaderData, useFetcher } from "react-router-dom";
 import { getOrder } from "../../services/apiRestaurant";
 import {
   calcMinutesLeft,
@@ -8,91 +6,75 @@ import {
   formatDate,
 } from "../../utils/helpers";
 import OrderItem from "./OrderItem";
-import { useEffect } from "react";
-import UpdateOrder from "./UpdateOrder";
+import Button from "../../ui/Button";
 
 function Order() {
   const order = useLoaderData();
-
   const fetcher = useFetcher();
 
-  useEffect(
-    function () {
-      if (!fetcher.data && fetcher.state === "idle") fetcher.load("/menu");
-    },
-    [fetcher],
-  );
-
-  console.log(fetcher.data);
-
-  // Everyone can search for all orders, so for privacy reasons we're gonna gonna exclude names or address, these are only for the restaurant staff
   const {
     id,
-    status,
-    priority,
-    priorityPrice,
-    orderPrice,
-    estimatedDelivery,
-    cart,
+    estado,
+    total,
+    data, // data do pedido
+    itens, // ✅ renamed from 'carrinho'
+    usuario,
+    endereco,
   } = order;
-  const deliveryIn = calcMinutesLeft(estimatedDelivery);
+
+  const deliveryIn = calcMinutesLeft(data);
+  const isCancelling = fetcher.state === "submitting";
 
   return (
-    <div className="px-6 py-8 space-y-8">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 className="text-xl font-semibold">Oreder #{id} status</h2>
+    <div className="space-y-8 px-6 py-8">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-xl font-semibold">
+          Pedido #{id} - {usuario?.nome}
+        </h2>
 
-        <div className="space-x-2">
-          {priority && (
-            <span className="bg-red-500 rounded-full py-1 px-3 text-sm uppercase font-semibold text-red-50 tracking-wide">
-              Priority
-            </span>
-          )}
-          <span className="bg-green-500 rounded-full py-1 px-3 text-sm uppercase font-semibold text-green-50 tracking-wide">
-            {status} order
-          </span>
-        </div>
+        <span className="rounded-full bg-green-500 px-3 py-1 text-sm font-semibold uppercase tracking-wide text-green-50">
+          {estado}
+        </span>
       </div>
 
-      <div className="flex items-center justify-between flex-wrap gap-2 bg-stone-200 py-5 px-6">
+      <div className="text-sm text-stone-700">
+        <p>
+          <span className="font-medium">Endereço:</span> {endereco?.rua},{" "}
+          {endereco?.bairro}
+        </p>
+        <p>
+          {endereco?.municipio}, {endereco?.provincia}
+        </p>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-2 bg-stone-200 px-6 py-5">
         <p className="font-medium">
           {deliveryIn >= 0
-            ? `Only ${calcMinutesLeft(estimatedDelivery)} minutes left 😃`
-            : "Order should have arrived"}
+            ? `Encomenda feita há ${deliveryIn} minutos`
+            : "Pedido processado"}
         </p>
         <p className="text-xs text-stone-500">
-          (Estimated delivery: {formatDate(estimatedDelivery)})
+          (Data do pedido: {formatDate(data)})
         </p>
       </div>
 
       <ul className="divide-y divide-stone-200 border-b border-t">
-        {cart.map((item) => (
-          <OrderItem
-            item={item}
-            key={item.id}
-            isLoadingIngredients={fetcher.state === "loading"}
-            ingredients={
-              fetcher?.data?.find((el) => el.id === item.pizzaId)
-                ?.ingredients ?? []
-            }
-          />
+        {itens.map((item) => (
+          <OrderItem item={item} key={item.id} />
         ))}
       </ul>
 
-      <div className="space-y-2 bg-stone-200 py-5 px-6">
-        <p className="text-sm font-medium text-stone-600">
-          Price pizza: {formatCurrency(orderPrice)}
-        </p>
-        {priority && (
-          <p className="text-sm font-medium text-stone-600">
-            Price priority: {formatCurrency(priorityPrice)}
-          </p>
-        )}
-        <p className="font-bold">
-          To pay on delivery: {formatCurrency(orderPrice + priorityPrice)}
-        </p>
+      <div className="space-y-2 bg-stone-200 px-6 py-5">
+        <p className="font-bold">Total a pagar: {formatCurrency(total)}</p>
       </div>
-      {!priority && <UpdateOrder order={order} />}
+
+      {estado !== "cancelado" && (
+        <fetcher.Form method="PATCH" action={`/order/${id}/cancel`}>
+          <Button type="secondary" disabled={isCancelling}>
+            {isCancelling ? "Cancelando..." : "Cancelar Pedido"}
+          </Button>
+        </fetcher.Form>
+      )}
     </div>
   );
 }

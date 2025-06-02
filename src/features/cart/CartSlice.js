@@ -42,9 +42,11 @@ export const deleteItemFromServer = createAsyncThunk(
 
 export const clearCartOnServer = createAsyncThunk(
   "cart/clearCartOnServer",
-  async (_, { dispatch }) => {
-    await apiClearCart();
-    dispatch(fetchCartFromServer());
+  async (userId, { dispatch }) => {
+    if (!userId) throw new Error("User ID is required to clear cart");
+
+    await apiClearCart(userId); // ✅ pass userId
+    dispatch(fetchCartFromServer(userId)); // if this also needs userId
   },
 );
 
