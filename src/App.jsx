@@ -3,6 +3,7 @@ import Home from "./ui/Home";
 import Menu, { loader as menuLoader } from "./features/menu/Menu";
 import Cart from "./features/cart/Cart";
 import User from "./features/user/CreateUser";
+import Edit from "./features/user/edit";
 import Order, { loader as orderLoader } from "./features/order/Order";
 import CreateOrder, {
   action as createOrderAction,
@@ -16,6 +17,11 @@ const router = createBrowserRouter([
   {
     path: "/user",
     element: <User />,
+    errorElement: <Error />,
+  },
+  {
+    path: "/edit",
+    element: <Edit />,
     errorElement: <Error />,
   },
 
