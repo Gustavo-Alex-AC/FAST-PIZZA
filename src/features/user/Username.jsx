@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { FaRegUser } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
+import { Link } from "react-router-dom";
 
 function Username() {
   const [user, setUser] = useState(null);
@@ -48,9 +49,11 @@ function Username() {
 
       {showMenu && (
         <div className="absolute right-0 top-full mt-2 w-40 bg-white shadow-lg rounded-md py-2 z-10">
-          <button className="block w-full px-4 py-2 text-left hover:bg-yellow-100" onClick={() => alert("Editar Perfil ainda não implementado")}>
+          <Link to="/edit">
+          <button className="block w-full px-4 py-2 text-left hover:bg-yellow-100">
             Editar Perfil
           </button>
+          </Link>
           <button className="block w-full px-4 py-2 text-left hover:bg-yellow-100" onClick={handleLogout}>
             Logout
           </button>
