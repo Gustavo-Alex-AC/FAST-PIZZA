@@ -43,6 +43,7 @@ export async function addToCart(item) {
     body: JSON.stringify({
       pizzaId: item.pizzaId,
       quantity: item.quantity,
+      userId: item.userId, // Adicionando userId para associar o item ao usuário
     }),
   });
   if (!res.ok) throw new Error("Erro ao adicionar item");

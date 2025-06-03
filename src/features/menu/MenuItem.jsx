@@ -6,6 +6,8 @@ import { getCurrentQuantityById, addItemToServer } from "../cart/CartSlice";
 import DeleteItem from "../cart/DeleteItem";
 import UpdateItemQuantity from "../cart/UpdateItemQuantity";
 
+const userId = 2;
+
 function MenuItem({ pizza }) {
   const dispatch = useDispatch();
   const {
@@ -24,6 +26,7 @@ function MenuItem({ pizza }) {
 
   function handleAddToCart() {
     const newItem = {
+      userId, // Adiciona o ID do usuário
       pizzaId: id,
       name,
       quantity: 1,
@@ -31,6 +34,7 @@ function MenuItem({ pizza }) {
       totalPrice: Number(unitPrice) * 1,
     };
 
+    console.log("Adicionando item ao carrinho:", newItem);
     dispatch(addItemToServer(newItem));
   }
 

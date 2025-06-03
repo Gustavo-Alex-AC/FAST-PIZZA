@@ -3,7 +3,7 @@ import { createOrder } from "../../services/apiRestaurant";
 import Button from "../../ui/Button";
 import { useSelector } from "react-redux";
 import {
-  clearCart,
+  // clearCart,
   clearCartOnServer,
   getCart,
   getTotalCartPrice,
@@ -15,7 +15,7 @@ import store from "../../Store"; // Uncomment if using store directly
 
 function CreateOrder() {
   // const dispatch = useDispatch();
-  const userId = 1; // Replace with real user ID from state later if available
+  const userId = 2; // Replace with real user ID from state later if available
 
   const cart = useSelector(getCart);
   const totalCartPrice = useSelector(getTotalCartPrice);
@@ -66,8 +66,7 @@ export async function action({ request }) {
     const newOrder = await createOrder(order);
 
     // Optional: Clear cart if using Redux or API method
-    await clearCartOnServer(order.id_usuario);
-    store.dispatch(clearCart());
+    store.dispatch(clearCartOnServer(order.id_usuario));
 
     return redirect(`/order/${newOrder.id}`);
   } catch (error) {

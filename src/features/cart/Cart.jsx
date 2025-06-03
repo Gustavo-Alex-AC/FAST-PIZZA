@@ -5,7 +5,7 @@ import EmptyCart from "./EmptyCart";
 import { useDispatch, useSelector } from "react-redux";
 import { clearCartOnServer, getCart } from "./CartSlice";
 
-const userId = 1; // Replace with real user ID from state later if available
+const userId = 2; // Replace with real user ID from state later if available
 
 function Cart() {
   const username = useSelector((state) => state.user.username);
