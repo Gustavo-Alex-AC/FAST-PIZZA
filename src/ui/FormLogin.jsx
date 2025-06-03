@@ -1,87 +1,120 @@
-import { useState } from "react";
 import { FaSignInAlt } from "react-icons/fa";
 import PropTypes from "prop-types";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+// Novo import para Redux
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../features/user/userSlice";
 
 function FormLogin({ showLogin, onClose }) {
-  const [showCreateModal, setShowCreateModal] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ email: "", senha: "" });
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const status = useSelector((state) => state.user.status);
+  //const error = useSelector((state) => state.user.error);
 
   if (!showLogin) return null;
 
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMsg("");
+
+    try {
+      const resultAction = await dispatch(loginUser(form));
+
+      if (loginUser.fulfilled.match(resultAction)) {
+        onClose(); // fecha o modal
+        navigate("/"); // redireciona
+        setForm({ email: "", senha: "" }); // limpa o formulário
+      } else {
+        setErrorMsg("Email ou senha incorretos."); // erro tratado no thunk
+      }
+    } catch (err) {
+      setErrorMsg("Erro no servidor. Tente novamente.");
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm relative">
+      <div className="relative w-full max-w-sm rounded-xl bg-white p-6 shadow-lg">
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl font-bold"
+          className="absolute right-2 top-2 text-xl font-bold text-gray-500 hover:text-red-500"
         >
           &times;
         </button>
 
-        <h2 className="text-xl font-semibold text-center text-gray-800 mb-4">Iniciar Sessão</h2>
+        <h2 className="mb-4 text-center text-xl font-semibold text-gray-800">
+          Iniciar Sessão
+        </h2>
 
-        <form className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">E-mail</label>
+            <label className="block text-sm font-medium text-gray-700">
+              E-mail
+            </label>
             <input
               type="email"
-              placeholder="Digite seu e-mail"
-              className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              name="email"
+              placeholder="seu@email.com"
+              value={form.email}
+              onChange={handleChange}
+              required
+              className="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Palavra-passe</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Palavra-passe
+            </label>
             <input
               type="password"
-              placeholder="Digite sua palavra-passe"
-              className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              name="senha"
+              placeholder="Sua senha"
+              value={form.senha}
+              onChange={handleChange}
+              required
+              className="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+
+          {errorMsg && (
+            <p className="mb-4 text-center text-sm text-red-600">{errorMsg}</p>
+          )}
 
           <button
             type="submit"
-            className="w-full flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-700 text-white font-medium py-2 px-4 rounded-md transition"
+            disabled={status === "loading"}
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-yellow-400 px-4 py-2 font-medium text-white transition hover:bg-yellow-700"
           >
             <FaSignInAlt />
-            Entrar
+            {status === "loading" ? "A entrar..." : "Entrar"}
           </button>
         </form>
 
-        <div className="text-center text-sm mt-4">
+        <div className="mt-4 text-center text-sm">
           Ainda não tem conta?{" "}
-          <button
-            type="button"
-            onClick={() => setShowCreateModal(true)}
-            className="text-blue-600 hover:underline"
-          >
-            Criar conta
-          </button>
+          <Link to="/user">
+            <button type="button" className="text-blue-600 hover:underline">
+              Criar conta
+            </button>
+          </Link>
         </div>
       </div>
-
-      {/* Modal de Criar Conta */}
-      {showCreateModal && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl relative">
-            <button
-              onClick={() => setShowCreateModal(false)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl"
-            >
-              ×
-            </button>
-            <h3 className="text-lg font-semibold mb-2">Criar Conta</h3>
-            <p className="text-sm text-gray-600">Aqui vai o formulário de criação de conta...</p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
 
-// 🧠 PropTypes para validação
 FormLogin.propTypes = {
-    showLogin: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-  };
+  showLogin: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+};
 
 export default FormLogin;

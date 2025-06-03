@@ -1,22 +1,31 @@
 import PropTypes from "prop-types";
 import Button from "../../ui/Button";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateItemQuantityOnServer } from "./CartSlice";
 
 function UpdateItemQuantity({ pizzaId, currentQuantity }) {
   const dispatch = useDispatch();
+  const userId = useSelector((state) => state.user.id);
 
   const handleDecrease = () => {
     if (currentQuantity > 1) {
       dispatch(
-        updateItemQuantityOnServer({ pizzaId, quantity: currentQuantity - 1 }),
+        updateItemQuantityOnServer({
+          pizzaId,
+          quantity: currentQuantity - 1,
+          userId,
+        }),
       );
     }
   };
 
   const handleIncrease = () => {
     dispatch(
-      updateItemQuantityOnServer({ pizzaId, quantity: currentQuantity + 1 }),
+      updateItemQuantityOnServer({
+        pizzaId,
+        quantity: currentQuantity + 1,
+        userId,
+      }),
     );
   };
 

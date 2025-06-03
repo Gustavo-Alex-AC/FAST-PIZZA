@@ -13,8 +13,23 @@ import Error from "./ui/Error";
 import { action as updateOrderAction } from "./features/order/UpdateOrder";
 import { action as cancelOrderAction } from "./features/order/CancelOrderAction";
 import { fetchCartFromServer } from "./features/cart/CartSlice";
+import CreateUser from "./features/user/CreateUser";
+import FormLogin from "./ui/FormLogin";
 
 const router = createBrowserRouter([
+  // 🔹 Rota sem layout
+  {
+    path: "/user",
+    element: <CreateUser />,
+    errorElement: <Error />,
+  },
+  {
+    path: "/login",
+    element: <FormLogin />,
+    errorElement: <Error />,
+  },
+
+  // 🔹 Rotas com layout AppLayout
   {
     element: <AppLayout />,
     errorElement: <Error />,

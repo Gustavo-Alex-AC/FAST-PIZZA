@@ -5,11 +5,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCurrentQuantityById, addItemToServer } from "../cart/CartSlice";
 import DeleteItem from "../cart/DeleteItem";
 import UpdateItemQuantity from "../cart/UpdateItemQuantity";
-
-const userId = 2;
+import { useNavigate } from "react-router-dom";
 
 function MenuItem({ pizza }) {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const userId = useSelector((state) => state.user.id);
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+
   const {
     id,
     name,
@@ -34,8 +37,10 @@ function MenuItem({ pizza }) {
       totalPrice: Number(unitPrice) * 1,
     };
 
-    console.log("Adicionando item ao carrinho:", newItem);
-    dispatch(addItemToServer(newItem));
+    //console.log("Adicionando item ao carrinho:", newItem);
+    {
+      isAuthenticated ? dispatch(addItemToServer(newItem)) : navigate("/user");
+    }
   }
 
   return (

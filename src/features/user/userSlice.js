@@ -1,63 +1,111 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getAddress } from "../../services/apiGeocoding";
+import axios from "axios";
+// import { getAddress } from "../../services/apiGeocoding"; // ❌ deixamos geocoding comentado
 
-function getPosition() {
-  return new Promise(function (resolve, reject) {
-    navigator.geolocation.getCurrentPosition(resolve, reject);
-  });
-}
+// function getPosition() {
+//   return new Promise(function (resolve, reject) {
+//     navigator.geolocation.getCurrentPosition(resolve, reject);
+//   });
+// }
 
-export const fetchAddress = createAsyncThunk(
-  "user/fetchAddress",
-  async function () {
-    // 1) We get the user's geolocation position
-    const positionObj = await getPosition();
-    const position = {
-      latitude: positionObj.coords.latitude,
-      longitude: positionObj.coords.longitude,
-    };
+export const loginUser = createAsyncThunk(
+  "user/loginUser",
+  async ({ email, senha }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/users/login",
+        {
+          email,
+          senha,
+        },
+      );
 
-    // 2) Then we use a reverse geocoding API to get a description of the user's address, so we can display it the order form, so that the user can correct it if wrong
-    const addressObj = await getAddress(position);
-    const address = `${addressObj?.locality}, ${addressObj?.city} ${addressObj?.postcode}, ${addressObj?.countryName}`;
+      const { token, usuario } = response.data;
 
-    // 3) Then we return an object with the data that we are interested in
-    return { position, address };
+      // Armazenar no localStorage também (opcional)
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(usuario));
+
+      return { ...usuario, token };
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.mensagem || "Erro ao fazer login",
+      );
+    }
   },
 );
 
+// ❗ Deixamos esse fetchAddress comentado, como você pediu
+// export const fetchAddress = createAsyncThunk(
+//   "user/fetchAddress",
+//   async function () {
+//     const positionObj = await getPosition();
+//     const position = {
+//       latitude: positionObj.coords.latitude,
+//       longitude: positionObj.coords.longitude,
+//     };
+
+//     const addressObj = await getAddress(position);
+//     const address = `${addressObj?.locality}, ${addressObj?.city} ${addressObj?.postcode}, ${addressObj?.countryName}`;
+
+//     return { position, address };
+//   },
+// );
+
 const initialState = {
-  username: "",
+  id: null,
+  nome: "",
+  email: "",
+  token: "",
+  isAuthenticated: false,
   status: "idle",
-  position: {},
-  address: "",
   error: "",
+  // position: {},
+  // address: "",
 };
 
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    updateName(state, action) {
-      state.username = action.payload;
+    logout(state) {
+      state.id = null;
+      state.nome = "";
+      state.email = "";
+      state.token = "";
+      state.isAuthenticated = false;
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    },
+    setUserFromStorage(state, action) {
+      const { id, nome, email, token } = action.payload;
+      state.id = id;
+      state.nome = nome;
+      state.email = email;
+      state.token = token;
+      state.isAuthenticated = true;
     },
   },
   extraReducers: (builder) =>
     builder
-      .addCase(fetchAddress.pending, (state) => {
+      .addCase(loginUser.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(fetchAddress.fulfilled, (state, action) => {
-        state.position = action.payload.position;
-        state.address = action.payload.address;
-        state.status = "idle";
+      .addCase(loginUser.fulfilled, (state, action) => {
+        const { id, nome, email, token } = action.payload;
+        state.id = id;
+        state.nome = nome;
+        state.email = email;
+        state.token = token;
+        state.isAuthenticated = true;
+        state.status = "succeeded";
       })
-      .addCase(fetchAddress.rejected, (state, action) => {
-        state.status = "error";
-        state.error = action.payload.message;
+      .addCase(loginUser.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+        state.isAuthenticated = false;
       }),
 });
 
-export const { updateName } = userSlice.actions;
-
+export const { logout, setUserFromStorage } = userSlice.actions;
 export default userSlice.reducer;

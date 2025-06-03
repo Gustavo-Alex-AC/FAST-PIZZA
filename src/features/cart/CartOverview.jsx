@@ -7,6 +7,8 @@ function CartOverview() {
   const totalCartQuantity = useSelector(getTotalCartQuantity);
   const totalCartPrice = useSelector(getTotalCartPrice);
 
+  console.log(totalCartQuantity, totalCartPrice);
+
   if (!totalCartQuantity) return null;
 
   return (

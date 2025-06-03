@@ -5,12 +5,11 @@ import EmptyCart from "./EmptyCart";
 import { useDispatch, useSelector } from "react-redux";
 import { clearCartOnServer, getCart } from "./CartSlice";
 
-const userId = 2; // Replace with real user ID from state later if available
-
 function Cart() {
-  const username = useSelector((state) => state.user.username);
   const cart = useSelector(getCart);
   const dispatch = useDispatch();
+  const userId = useSelector((state) => state.user.id);
+  const nome = useSelector((state) => state.user.nome);
 
   if (!cart.length) return <EmptyCart />;
 
@@ -18,7 +17,7 @@ function Cart() {
     <div className="px-4 py-3">
       <LinkButton to="/menu">&larr; Voltar ao cardápio</LinkButton>
 
-      <h2 className="mt-7 text-xl font-semibold">Seu carinho, {username}</h2>
+      <h2 className="mt-7 text-xl font-semibold">Seu carinho, {nome}</h2>
 
       <ul className="mt-3 divide-y divide-stone-200 border-b">
         {cart.map((item) => (

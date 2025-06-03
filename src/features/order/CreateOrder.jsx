@@ -15,9 +15,11 @@ import store from "../../Store"; // Uncomment if using store directly
 
 function CreateOrder() {
   // const dispatch = useDispatch();
-  const userId = 2; // Replace with real user ID from state later if available
+  const userId = useSelector((state) => state.user.id);
+  //const nome = useSelector((state) => state.user.nome);
+  //const isLogged = useSelector((state) => state.user.isAuthenticated);
 
-  const cart = useSelector(getCart);
+  const cart = useSelector(getCart(userId));
   const totalCartPrice = useSelector(getTotalCartPrice);
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";

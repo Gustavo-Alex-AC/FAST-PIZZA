@@ -10,12 +10,19 @@ import {
 // THUNKS
 export const fetchCartFromServer = createAsyncThunk(
   "cart/fetchCartFromServer",
-  async () => {
-    const data = await apiGetCart();
-    return data;
+  async (userId) => {
+    if (!userId) throw new Error("User ID is required to fetch cart");
+    return await apiGetCart(userId);
   },
 );
 
+// export const addItemToServer = createAsyncThunk(
+//   "cart/addItemToServer",
+//   async ({ item, userId }, { dispatch }) => {
+//     await apiAddToCart(item);
+//     dispatch(fetchCartFromServer(userId)); // Atualiza local
+//   },
+// );
 export const addItemToServer = createAsyncThunk(
   "cart/addItemToServer",
   async (item, { dispatch }) => {
@@ -26,17 +33,17 @@ export const addItemToServer = createAsyncThunk(
 
 export const updateItemQuantityOnServer = createAsyncThunk(
   "cart/updateItemQuantityOnServer",
-  async ({ pizzaId, quantity }, { dispatch }) => {
+  async ({ pizzaId, quantity, userId }, { dispatch }) => {
     await apiUpdateCartItem(pizzaId, quantity);
-    dispatch(fetchCartFromServer());
+    dispatch(fetchCartFromServer(userId));
   },
 );
 
 export const deleteItemFromServer = createAsyncThunk(
   "cart/deleteItemFromServer",
-  async (pizzaId, { dispatch }) => {
+  async ({ pizzaId, userId }, { dispatch }) => {
     await apiDeleteCartItem(pizzaId);
-    dispatch(fetchCartFromServer());
+    dispatch(fetchCartFromServer(userId));
   },
 );
 

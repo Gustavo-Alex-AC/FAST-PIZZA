@@ -8,9 +8,12 @@ import {
 import OrderItem from "./OrderItem";
 import Button from "../../ui/Button";
 
+import { useSelector } from "react-redux";
+
 function Order() {
   const order = useLoaderData();
   const fetcher = useFetcher();
+  const nome = useSelector((state) => state.user.nome);
 
   const {
     id,
@@ -18,7 +21,6 @@ function Order() {
     total,
     data, // data do pedido
     itens, // ✅ renamed from 'carrinho'
-    usuario,
     endereco,
   } = order;
 
@@ -29,7 +31,7 @@ function Order() {
     <div className="space-y-8 px-6 py-8">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-xl font-semibold">
-          Pedido #{id} - {usuario?.nome}
+          Pedido #{id} - {nome}
         </h2>
 
         <span className="rounded-full bg-green-500 px-3 py-1 text-sm font-semibold uppercase tracking-wide text-green-50">
@@ -39,8 +41,8 @@ function Order() {
 
       <div className="text-sm text-stone-700">
         <p>
-          <span className="font-medium">Endereço:</span> {endereco?.rua},{" "}
-          {endereco?.bairro}
+          <span className="font-medium">Endereço:</span> {endereco?.casa},
+          {endereco?.rua}
         </p>
         <p>
           {endereco?.municipio}, {endereco?.provincia}

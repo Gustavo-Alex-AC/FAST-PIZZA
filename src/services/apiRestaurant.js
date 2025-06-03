@@ -28,9 +28,8 @@ export async function getMenu() {
 }
 
 // Carrinho
-
-export async function getCart() {
-  const res = await fetch(`${API_URL_I}/carrinho`);
+export async function getCart({ userId }) {
+  const res = await fetch(`${API_URL_I}/carrinho/${userId}`);
   if (!res.ok) throw new Error();
   const data = await res.json();
   return data;

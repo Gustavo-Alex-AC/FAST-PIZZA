@@ -1,20 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GoSignIn } from "react-icons/go";
-import FormLogin from "./FormLogin"; // Ajuste o caminho se necessário
+import { FaSignOutAlt } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../features/user/userSlice"; // ajuste o caminho conforme seu projeto
+import FormLogin from "../ui/FormLogin"; // ajuste se necessário
 
 function Signin() {
+  const dispatch = useDispatch();
+  //const user = useSelector((state) => state.user.nome);
+  const nome = useSelector((state) => state.user.nome); // verifica se está logado
   const [showLogin, setShowLogin] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) setShowLogin(false);
+  }, []);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    localStorage.removeItem("token");
+  };
 
   return (
     <>
-      <div className="flex justify-center items-center gap-2 bg-white p-3 rounded shadow cursor-pointer">
-        <GoSignIn className="text-xl text-yellow-600" />
-        <button
-          onClick={() => setShowLogin(true)}
-          className="text-yellow-600 font-medium hover:underline"
-        >
-          Entrar
-        </button>
+      <div className="flex cursor-pointer items-center justify-center gap-2 rounded bg-white p-3 shadow">
+        {!nome ? (
+          <button
+            onClick={() => setShowLogin(true)}
+            className="flex items-center gap-2 font-medium text-yellow-600 hover:underline"
+          >
+            <GoSignIn className="text-xl text-yellow-600" />
+            Entrar
+          </button>
+        ) : (
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 font-medium text-red-600 hover:underline"
+          >
+            <FaSignOutAlt className="text-xl text-red-600" />
+            Sair
+          </button>
+        )}
       </div>
 
       <FormLogin showLogin={showLogin} onClose={() => setShowLogin(false)} />
