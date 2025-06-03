@@ -7,7 +7,7 @@ function Menu() {
   //console.log(menu);
 
   return (
-    <ul className="divide-y divide-stone-200 px-2">
+    <ul className="w-full flex flex-wrap gap-6 px-2">
       {menu.map((pizza) => (
         <MenuItem pizza={pizza} key={pizza.id} />
       ))}
