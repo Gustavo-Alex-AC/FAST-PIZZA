@@ -19,7 +19,8 @@ function CreateOrder() {
   //const nome = useSelector((state) => state.user.nome);
   //const isLogged = useSelector((state) => state.user.isAuthenticated);
 
-  const cart = useSelector(getCart(userId));
+  const cart = useSelector((state) => getCart(state, userId));
+
   const totalCartPrice = useSelector(getTotalCartPrice);
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";

@@ -29,17 +29,18 @@ function MenuItem({ pizza }) {
 
   function handleAddToCart() {
     const newItem = {
-      userId, // Adiciona o ID do usuário
       pizzaId: id,
       name,
       quantity: 1,
       unitPrice,
-      totalPrice: Number(unitPrice) * 1,
+      totalPrice: Number(unitPrice),
+      userId,
     };
 
-    //console.log("Adicionando item ao carrinho:", newItem);
-    {
-      isAuthenticated ? dispatch(addItemToServer(newItem)) : navigate("/user");
+    if (isAuthenticated) {
+      dispatch(addItemToServer(newItem));
+    } else {
+      navigate("/user");
     }
   }
 

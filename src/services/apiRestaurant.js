@@ -28,12 +28,18 @@ export async function getMenu() {
 }
 
 // Carrinho
-export async function getCart({ userId }) {
+export async function getCart(userId) {
   const res = await fetch(`${API_URL_I}/carrinho/${userId}`);
-  if (!res.ok) throw new Error();
-  const data = await res.json();
-  return data;
+  if (!res.ok) throw new Error("Erro ao buscar carrinho");
+  return await res.json();
 }
+
+// export async function getCart({ userId }) {
+//   const res = await fetch(`${API_URL_I}/carrinho/${userId}`);
+//   if (!res.ok) throw new Error();
+//   const data = await res.json();
+//   return data;
+// }
 
 export async function addToCart(item) {
   const res = await fetch(`${API_URL_I}/carrinho`, {
@@ -42,10 +48,16 @@ export async function addToCart(item) {
     body: JSON.stringify({
       pizzaId: item.pizzaId,
       quantity: item.quantity,
-      userId: item.userId, // Adicionando userId para associar o item ao usuário
+      userId: item.userId,
     }),
   });
-  if (!res.ok) throw new Error("Erro ao adicionar item");
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.message || "Erro ao adicionar item");
+  }
+
+  return await res.json(); // Retorna a resposta caso precise no Redux
 }
 
 export async function updateCartItem(pizzaId, quantity) {

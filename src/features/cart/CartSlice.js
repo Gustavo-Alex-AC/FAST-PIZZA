@@ -12,22 +12,15 @@ export const fetchCartFromServer = createAsyncThunk(
   "cart/fetchCartFromServer",
   async (userId) => {
     if (!userId) throw new Error("User ID is required to fetch cart");
-    return await apiGetCart(userId);
+    return await apiGetCart(userId); // está certo agora
   },
 );
 
-// export const addItemToServer = createAsyncThunk(
-//   "cart/addItemToServer",
-//   async ({ item, userId }, { dispatch }) => {
-//     await apiAddToCart(item);
-//     dispatch(fetchCartFromServer(userId)); // Atualiza local
-//   },
-// );
 export const addItemToServer = createAsyncThunk(
   "cart/addItemToServer",
   async (item, { dispatch }) => {
-    await apiAddToCart(item);
-    dispatch(fetchCartFromServer()); // Atualiza local
+    await apiAddToCart(item); // item já tem userId agora
+    dispatch(fetchCartFromServer(item.userId)); // usa o mesmo userId
   },
 );
 
