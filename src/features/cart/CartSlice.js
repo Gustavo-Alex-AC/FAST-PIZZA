@@ -35,7 +35,7 @@ export const updateItemQuantityOnServer = createAsyncThunk(
 export const deleteItemFromServer = createAsyncThunk(
   "cart/deleteItemFromServer",
   async ({ pizzaId, userId }, { dispatch }) => {
-    await apiDeleteCartItem(pizzaId);
+    await apiDeleteCartItem(pizzaId, userId);
     dispatch(fetchCartFromServer(userId));
   },
 );

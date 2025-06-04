@@ -4,9 +4,12 @@ import { FaSignOutAlt } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/user/userSlice"; // ajuste o caminho conforme seu projeto
 import FormLogin from "../ui/FormLogin"; // ajuste se necessário
+import { useNavigate } from "react-router-dom";
+import { clearCart } from "../features/cart/CartSlice";
 
 function Signin() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   //const user = useSelector((state) => state.user.nome);
   const nome = useSelector((state) => state.user.nome); // verifica se está logado
   const [showLogin, setShowLogin] = useState(false);
@@ -17,8 +20,10 @@ function Signin() {
   }, []);
 
   const handleLogout = () => {
+    dispatch(clearCart());
     dispatch(logout());
     localStorage.removeItem("token");
+    navigate("/"); // redireciona para a página inicial após logout
   };
 
   return (

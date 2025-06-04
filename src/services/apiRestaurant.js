@@ -34,13 +34,6 @@ export async function getCart(userId) {
   return await res.json();
 }
 
-// export async function getCart({ userId }) {
-//   const res = await fetch(`${API_URL_I}/carrinho/${userId}`);
-//   if (!res.ok) throw new Error();
-//   const data = await res.json();
-//   return data;
-// }
-
 export async function addToCart(item) {
   const res = await fetch(`${API_URL_I}/carrinho`, {
     method: "POST",
@@ -69,10 +62,11 @@ export async function updateCartItem(pizzaId, quantity) {
   if (!res.ok) throw new Error("Erro ao atualizar quantidade");
 }
 
-export async function deleteCartItem(pizzaId) {
-  const res = await fetch(`${API_URL_I}/carrinho/${pizzaId}`, {
+export async function deleteCartItem(pizzaId, userId) {
+  const res = await fetch(`${API_URL_I}/carrinho/${pizzaId}?userId=${userId}`, {
     method: "DELETE",
   });
+
   if (!res.ok) throw new Error("Erro ao apagar item");
 }
 

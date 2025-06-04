@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigation } from "react-router-dom";
 import Header from "./Header";
 import CartOverview from "../features/cart/CartOverview";
@@ -11,9 +11,14 @@ function AppLayout() {
   const isLoading = navigation.state === "loading";
   const dispatch = useDispatch();
 
+  const userId = useSelector((state) => state.user.id);
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+
   useEffect(() => {
-    dispatch(fetchCartFromServer());
-  }, [dispatch]);
+    if (isAuthenticated && userId) {
+      dispatch(fetchCartFromServer(userId));
+    }
+  }, [dispatch, userId, isAuthenticated]);
 
   return (
     <div className="grid h-screen grid-rows-[auto_1fr_auto]">
