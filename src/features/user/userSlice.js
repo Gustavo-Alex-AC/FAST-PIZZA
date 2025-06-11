@@ -21,6 +21,8 @@ export const loginUser = createAsyncThunk(
       );
 
       const { token, usuario } = response.data;
+      console.log("Usuário recebido da API:", usuario);
+
 
       // Armazenar no localStorage também (opcional)
       localStorage.setItem("token", token);
@@ -55,6 +57,7 @@ export const loginUser = createAsyncThunk(
 const initialState = {
   id: null,
   nome: "",
+  sobrenome:"",
   email: "",
   token: "",
   isAuthenticated: false,
@@ -71,6 +74,7 @@ const userSlice = createSlice({
     logout(state) {
       state.id = null;
       state.nome = "";
+      state.sobrenome ="",
       state.email = "";
       state.token = "";
       state.isAuthenticated = false;
@@ -78,9 +82,10 @@ const userSlice = createSlice({
       localStorage.removeItem("user");
     },
     setUserFromStorage(state, action) {
-      const { id, nome, email, token } = action.payload;
+      const { id, nome, sobrenome,email, token } = action.payload;
       state.id = id;
       state.nome = nome;
+      state.sobrenome = sobrenome;
       state.email = email;
       state.token = token;
       state.isAuthenticated = true;
@@ -92,9 +97,10 @@ const userSlice = createSlice({
         state.status = "loading";
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        const { id, nome, email, token } = action.payload;
+        const { id, nome,sobrenome, email, token } = action.payload;
         state.id = id;
         state.nome = nome;
+        state.sobrenome = sobrenome;
         state.email = email;
         state.token = token;
         state.isAuthenticated = true;

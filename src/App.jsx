@@ -15,12 +15,18 @@ import { action as cancelOrderAction } from "./features/order/CancelOrderAction"
 import { fetchCartFromServer } from "./features/cart/CartSlice";
 import CreateUser from "./features/user/CreateUser";
 import FormLogin from "./ui/FormLogin";
+import Edit from "./features/user/Edit";
 
 const router = createBrowserRouter([
   // 🔹 Rota sem layout
   {
     path: "/user",
     element: <CreateUser />,
+    errorElement: <Error />,
+  },
+  {
+    path: "/edit",
+    element: <Edit />,
     errorElement: <Error />,
   },
   {
