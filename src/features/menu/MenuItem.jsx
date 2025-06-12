@@ -12,28 +12,16 @@ function MenuItem({ pizza }) {
   const dispatch = useDispatch();
   const userId = useSelector((state) => state.user.id);
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
-
-  const {
-    id,
-    name,
-    ingredients,
-    soldOut,
-    imageUrl,
-    unitPrice,
-    size, // <-- Tamanho da pizza
-    category, // <-- Categoria da pizza
-  } = pizza;
-
-  const currentQuantity = useSelector(getCurrentQuantityById(id));
+  const currentQuantity = useSelector(getCurrentQuantityById(pizza.id));
   const isInCart = currentQuantity > 0;
 
   function handleAddToCart() {
     const newItem = {
-      pizzaId: id,
-      name,
+      pizzaId: pizza.id,
+      name: pizza.name,
       quantity: 1,
-      unitPrice,
-      totalPrice: Number(unitPrice),
+      unitPrice: pizza.unitPrice,
+      totalPrice: Number(pizza.unitPrice),
       userId,
     };
 
@@ -45,55 +33,59 @@ function MenuItem({ pizza }) {
   }
 
   return (
-    <li className="flex gap-4 py-2">
-      <img
-        src={imageUrl}
-        alt={name}
-        className={`h-24 ${soldOut ? "opacity-70 grayscale" : ""}`}
-      />
+    <li className="flex flex-col justify-between rounded-2xl border border-stone-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+      {/* Imagem */}
+      <div className="h-44 overflow-hidden rounded-xl">
+        <img
+          src={pizza.imageUrl}
+          alt={pizza.name}
+          className={`h-full w-full object-cover transition duration-200 ${
+            pizza.soldOut ? "opacity-50 grayscale" : ""
+          }`}
+        />
+      </div>
 
-      <div className="flex grow flex-col pt-0.5">
-        <p className="text-lg font-medium">{name}</p>
-
-        <p className="text-sm capitalize italic text-stone-500">
-          Ingredientes: {ingredients.join(", ")}
-        </p>
-
-        {size && (
-          <p className="text-sm capitalize text-stone-500">Tamanho: {size}</p>
+      {/* Conteúdo */}
+      <div className="mt-4 flex flex-col items-center gap-1 text-center">
+        <h3 className="text-lg font-semibold text-orange-800">{pizza.name}</h3>
+        <p className="text-xs text-stone-500">{pizza.ingredients.join(", ")}</p>
+        {pizza.size && (
+          <p className="text-xs text-stone-500">Tamanho: {pizza.size}</p>
+        )}
+        {pizza.category && (
+          <p className="text-xs text-stone-500">Categoria: {pizza.category}</p>
         )}
 
-        {category && (
-          <p className="text-sm capitalize text-stone-500">
-            Categoria: {category}
-          </p>
-        )}
-
-        <div className="mt-auto flex items-center justify-between">
-          {!soldOut ? (
-            <p className="text-sm font-semibold">{formatCurrency(unitPrice)}</p>
+        <div className="mt-2">
+          {!pizza.soldOut ? (
+            <span className="text-sm font-semibold text-green-700">
+              {formatCurrency(pizza.unitPrice)}
+            </span>
           ) : (
-            <p className="text-sm font-medium uppercase text-stone-500">
+            <span className="text-sm font-medium uppercase text-red-500">
               Esgotado
-            </p>
-          )}
-
-          {isInCart ? (
-            <div className="flex items-center gap-3 sm:gap-8">
-              <UpdateItemQuantity
-                pizzaId={id}
-                currentQuantity={currentQuantity}
-              />
-              <DeleteItem pizzaId={id} />
-            </div>
-          ) : (
-            !soldOut && (
-              <Button type="small" onClick={handleAddToCart}>
-                Adicionar ao carrinho
-              </Button>
-            )
+            </span>
           )}
         </div>
+      </div>
+
+      {/* Ações */}
+      <div className="mt-4 flex justify-center">
+        {isInCart ? (
+          <div className="flex items-center gap-2">
+            <UpdateItemQuantity
+              pizzaId={pizza.id}
+              currentQuantity={currentQuantity}
+            />
+            <DeleteItem pizzaId={pizza.id} />
+          </div>
+        ) : (
+          !pizza.soldOut && (
+            <Button type="small" onClick={handleAddToCart}>
+              Adicionar
+            </Button>
+          )
+        )}
       </div>
     </li>
   );
@@ -101,14 +93,14 @@ function MenuItem({ pizza }) {
 
 MenuItem.propTypes = {
   pizza: PropTypes.shape({
-    id: PropTypes.number,
+    id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     ingredients: PropTypes.arrayOf(PropTypes.string).isRequired,
     soldOut: PropTypes.bool.isRequired,
     imageUrl: PropTypes.string.isRequired,
     unitPrice: PropTypes.number.isRequired,
-    size: PropTypes.string, // <-- Novo
-    category: PropTypes.string, // <-- Novo
+    size: PropTypes.string,
+    category: PropTypes.string,
   }).isRequired,
 };
 

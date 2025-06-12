@@ -1,37 +1,60 @@
-import { Link } from "react-router-dom";
-import pizzaImage from "../assets/chad-montano-MqT0asuoIcU-unsplash.jpg";
+import { useEffect, useState } from "react";
+import Lottie from "lottie-react";
+import animacaoApp from "../assets/order-food.json";
+import logoWhite from "../assets/logoWhite.svg";
+import animacao2 from "../assets/food-delivery.json";
+import { getMenu } from "../services/apiRestaurant";
+import MenuItem from "../features/menu/MenuItem";
 
 function Home() {
-  return (
-    <div className="my-10 flex flex-col items-center gap-8 px-4 sm:my-16 md:flex-row md:items-center md:justify-center">
-      {/* Texto */}
-      <div className="max-w-lg text-center md:text-left">
-        <h1 className="mb-8 text-xl font-semibold md:text-3xl">
-          A melhor pizza.
-          <br />
-          <span className="uppercase text-yellow-400">
-            DO FORNO, DIRETO PARA VOCÊ.
-          </span>
-        </h1>
+  const [menu, setMenu] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-        {/* Botão que redireciona para o menu */}
-        <Link
-          to="/menu"
-          className="inline-block rounded-full bg-yellow-400 px-6 py-3 font-semibold uppercase text-stone-800 shadow-md transition hover:bg-yellow-300"
-        >
-          Ver Cardápio
-        </Link>
+  useEffect(() => {
+    async function fetchMenu() {
+      try {
+        const data = await getMenu();
+        setMenu(data);
+      } catch (error) {
+        console.error("Erro ao carregar menu:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchMenu();
+  }, []);
+
+  return (
+    <div>
+      {/* 🔸 Esta div NÃO será afetada por padding externo */}
+      <div className="relative mb-5 flex flex-wrap items-center justify-center gap-6 bg-orange-400 p-4">
+        <Lottie style={{ width: 150, height: 150 }} animationData={animacaoApp} loop />
+        <img src={logoWhite} alt="Logo" className="h-20" />
+        <div className="text-white text-center text-lg">
+          <p>
+            A melhor pizza <br />
+            <span className="font-bold">DO FORNO, DIRETO PARA VOCÊ</span>
+          </p>
+        </div>
+        <Lottie style={{ width: 150, height: 150 }} animationData={animacao2} loop />
       </div>
 
-      {/* Imagem como background */}
-      <div
-        className="h-72 w-72 rounded-lg bg-cover bg-center shadow-lg"
-        style={{
-          backgroundImage: `url(${pizzaImage})`,
-        }}
-      ></div>
+      {/* 🔹 Apenas o menu tem padding horizontal/vertical */}
+      <div className="px-4 py-6">
+        {loading ? (
+          <p className="text-center text-stone-500">Carregando menu...</p>
+        ) : (
+          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {menu.map((pizza) => (
+              <MenuItem pizza={pizza} key={pizza.id} />
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
+
 
 export default Home;

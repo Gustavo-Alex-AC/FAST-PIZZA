@@ -17,6 +17,7 @@ function Menu() {
 
 export async function loader() {
   const menu = await getMenu();
+  console.log("DADOS DO MENU", menu); // ← Adicione isso
   return menu;
 }
 
