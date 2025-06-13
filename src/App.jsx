@@ -16,12 +16,18 @@ import { fetchCartFromServer } from "./features/cart/CartSlice";
 import CreateUser from "./features/user/CreateUser";
 import FormLogin from "./ui/FormLogin";
 import Edit from "./features/user/Edit";
+import LogisticsDashboard from "./pages/LogisticsDashboard";
 
 const router = createBrowserRouter([
   // 🔹 Rota sem layout
   {
     path: "/user",
     element: <CreateUser />,
+    errorElement: <Error />,
+  },
+  {
+    path: "/logistica",
+    element: <LogisticsDashboard />,
     errorElement: <Error />,
   },
   {
