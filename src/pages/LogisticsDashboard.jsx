@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import DashboardHeader from "../components/DashboardHeader";
 import OrderList from "../components/OrderList";
-import api from "../services/apiLogistics"; // Assumindo que esse arquivo está correto
+import PizzaStockList from "../components/PizzaStock";
+import PagamentoModal from "../components/PagamentoModal";
+import api from "../services/apiLogistics";
 
 const LogisticsDashboard = () => {
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [abaAtiva, setAbaAtiva] = useState("entregas");
+  const [pagamentoModal, setPagamentoModal] = useState({ aberto: false, pedido: null });
 
   const fetchPedidos = async () => {
     try {
@@ -21,15 +25,16 @@ const LogisticsDashboard = () => {
   const atualizarEstado = async (id, novoEstado) => {
     try {
       await api.put(`/pedidos/${id}`, { estado: novoEstado });
-      // Atualiza localmente
       setPedidos((prev) =>
-        prev.map((p) =>
-          p.id === id ? { ...p, estado: novoEstado } : p
-        )
+        prev.map((p) => (p.id === id ? { ...p, estado: novoEstado } : p))
       );
     } catch (error) {
       console.error("Erro ao atualizar pedido:", error);
     }
+  };
+
+  const abrirModalPagamento = (pedido) => {
+    setPagamentoModal({ aberto: true, pedido });
   };
 
   useEffect(() => {
@@ -40,9 +45,32 @@ const LogisticsDashboard = () => {
 
   return (
     <div>
-      <DashboardHeader pedidos={pedidos} />
-      <main className="p-10">
-        <OrderList pedidos={pedidos} onUpdate={atualizarEstado} />
+      <DashboardHeader
+        pedidos={pedidos}
+        abaAtiva={abaAtiva}
+        setAbaAtiva={setAbaAtiva}
+      />
+
+      <main className="p-10 w-full">
+        {abaAtiva === "entregas" && (
+          <OrderList
+            pedidos={pedidos}
+            onUpdate={atualizarEstado}
+            abrirModalPagamento={abrirModalPagamento}
+          />
+        )}
+
+        {abaAtiva === "stock" && (
+          <PizzaStockList />
+        )}
+
+        {pagamentoModal.aberto && (
+          <PagamentoModal
+            pedido={pagamentoModal.pedido}
+            onClose={() => setPagamentoModal({ aberto: false, pedido: null })}
+            onConfirm={() => fetchPedidos()}
+          />
+        )}
       </main>
     </div>
   );

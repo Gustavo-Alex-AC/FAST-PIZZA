@@ -1,32 +1,25 @@
-import OrderItem from "./Orderitem";
 import PropTypes from "prop-types";
+import OrderItem from "./OrderItem";
 
-const OrderList = ({ pedidos, onUpdate }) => {
+const OrderList = ({ pedidos, onUpdate, abrirModalPagamento }) => {
   return (
-    <div>
+    <div className="grid gap-4">
       {pedidos.map((pedido) => (
-        <OrderItem key={pedido.id} pedido={pedido} onUpdate={onUpdate} />
+        <OrderItem
+          key={pedido.id}
+          pedido={pedido}
+          onUpdate={onUpdate}
+          abrirModalPagamento={abrirModalPagamento}
+        />
       ))}
     </div>
   );
 };
 
 OrderList.propTypes = {
-  pedidos: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      estado: PropTypes.string.isRequired,
-      usuario: PropTypes.shape({
-        nome: PropTypes.string.isRequired,
-      }).isRequired,
-      endereco: PropTypes.shape({
-        rua: PropTypes.string.isRequired,
-        bairro: PropTypes.string.isRequired,
-        municipio: PropTypes.string.isRequired,
-      }).isRequired,
-    })
-  ).isRequired,
+  pedidos: PropTypes.array.isRequired,
   onUpdate: PropTypes.func.isRequired,
+  abrirModalPagamento: PropTypes.func.isRequired,
 };
 
 export default OrderList;

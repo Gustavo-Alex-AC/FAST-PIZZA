@@ -1,12 +1,19 @@
 import PropTypes from "prop-types";
 
-const OrderItem = ({ pedido, onUpdate }) => {
+const OrderItem = ({ pedido, onUpdate, abrirModalPagamento }) => {
   return (
-    <div className="border p-4 rounded shadow mb-4">
-      <div className="font-semibold">#{pedido.id} - {pedido.usuario.nome}</div>
-      <div className="text-sm">{pedido.endereco.rua}, {pedido.endereco.bairro}, {pedido.endereco.municipio}</div>
-      <div className="text-sm mb-2">Status: <span className="font-medium">{pedido.estado}</span></div>
-      <div className="flex gap-2">
+    <div className="mb-4 rounded border p-4 shadow">
+      <div className="font-semibold">
+        #{pedido.id} - {pedido.usuario.nome}
+      </div>
+      <div className="text-sm">
+        {pedido.endereco.rua}, {pedido.endereco.bairro},{" "}
+        {pedido.endereco.municipio}
+      </div>
+      <div className="mb-2 text-sm">
+        Status: <span className="font-medium">{pedido.estado}</span>
+      </div>
+      <div className="flex flex-col gap-2">
         {pedido.estado === "pendente" && (
           <button
             onClick={() => onUpdate(pedido.id, "em rota")}
@@ -15,9 +22,10 @@ const OrderItem = ({ pedido, onUpdate }) => {
             Marcar como Em Rota
           </button>
         )}
+
         {pedido.estado !== "entregue" && (
           <button
-            onClick={() => onUpdate(pedido.id, "entregue")}
+            onClick={() => abrirModalPagamento(pedido)}
             className="bg-green-500 text-white px-3 py-1 rounded"
           >
             Marcar como Entregue
@@ -42,6 +50,7 @@ OrderItem.propTypes = {
     }).isRequired,
   }).isRequired,
   onUpdate: PropTypes.func.isRequired,
+  abrirModalPagamento: PropTypes.func.isRequired,
 };
 
 export default OrderItem;
