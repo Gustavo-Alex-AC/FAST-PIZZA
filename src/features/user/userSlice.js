@@ -1,25 +1,24 @@
+// src/features/user/userSlice.js
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+/* ------------ THUNKS ------------ */
 export const loginUser = createAsyncThunk(
   "user/loginUser",
   async ({ email, senha }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/users/login",
-        {
-          email,
-          senha,
-        },
-      );
+      const res = await axios.post("http://localhost:3000/api/users/login", {
+        email,
+        senha,
+      });
 
-      const { token, usuario } = response.data;
-      console.log("Usuário recebido da API:", usuario);
+      const { token, usuario } = res.data;
 
+      // persiste no localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(usuario));
 
-      return { ...usuario, token }; // inclui tipo
+      return { ...usuario, token }; // inclui o campo `tipo`
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.mensagem || "Erro ao fazer login",
@@ -28,66 +27,71 @@ export const loginUser = createAsyncThunk(
   },
 );
 
+/* ------------ STATE ------------ */
 const initialState = {
   id: null,
   nome: "",
   sobrenome: "",
   email: "",
-  tipo: "",            // 👈 Adicionado
+  tipo: "",      // <– cliente | admin
   token: "",
   isAuthenticated: false,
+
   status: "idle",
   error: "",
+
+  hydrated: false, // <- indica se já verificamos localStorage
 };
 
+/* ------------ SLICE ------------ */
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
     logout(state) {
-      state.id = null;
-      state.nome = "";
-      state.sobrenome = "";
-      state.email = "";
-      state.tipo = "";          // 👈 Limpar tipo também
-      state.token = "";
-      state.isAuthenticated = false;
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      Object.assign(state, initialState, { hydrated: true });
+      localStorage.clear();
     },
+
+    // chamado pelo BootstrapAuth quando EXISTE user no storage
     setUserFromStorage(state, action) {
-      const { id, nome, sobrenome, email, tipo, token } = action.payload;
-      state.id = id;
-      state.nome = nome;
-      state.sobrenome = sobrenome;
-      state.email = email;
-      state.tipo = tipo;        // 👈 Setar tipo
-      state.token = token;
-      state.isAuthenticated = true;
+      Object.assign(state, {
+        ...action.payload,      // id,nome,sobrenome,email,tipo,token
+        isAuthenticated: true,
+        status: "succeeded",
+        hydrated: true,         // ✅ terminamos a hidratação
+      });
+    },
+
+    // chamado pelo BootstrapAuth quando NÃO existe user no storage
+    finishHydration(state) {
+      state.hydrated = true;    // ✅ evita redirecionamento precoce
     },
   },
+
   extraReducers: (builder) =>
     builder
       .addCase(loginUser.pending, (state) => {
         state.status = "loading";
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        const { id, nome, sobrenome, email, tipo, token } = action.payload;
-        state.id = id;
-        state.nome = nome;
-        state.sobrenome = sobrenome;
-        state.email = email;
-        state.tipo = tipo;      // 👈 Salvar tipo no estado
-        state.token = token;
-        state.isAuthenticated = true;
-        state.status = "succeeded";
+        Object.assign(state, {
+          ...action.payload,      // id, nome, tipo, token…
+          isAuthenticated: true,
+          status: "succeeded",
+          hydrated: true,
+        });
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload;
-        state.isAuthenticated = false;
+        state.error  = action.payload;
       }),
 });
 
-export const { logout, setUserFromStorage } = userSlice.actions;
+export const {
+  logout,
+  setUserFromStorage,
+  finishHydration,
+} = userSlice.actions;
+
 export default userSlice.reducer;
