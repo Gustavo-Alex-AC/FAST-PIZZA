@@ -18,19 +18,25 @@ import FormLogin from "./ui/FormLogin";
 import Edit from "./features/user/Edit";
 import LogisticsDashboard from "./pages/LogisticsDashboard";
 import RotaProtegida from "./features/user/RotaProtegida";
+import AdminRoute from "./ui/AdminRoute";
 
 const router = createBrowserRouter([
   // 🔹 Rotas sem layout
-  {
-    path: "/user",
-    element: <CreateUser />,
-    errorElement: <Error />,
-  },
-  {
-    path: "/logistica",
-    element: <LogisticsDashboard />,
-    errorElement: <Error />,
-  },
+{
+  path: "/user",
+  element: <CreateUser />,
+  errorElement: <Error />,
+},
+
+// 🔹 ROTAS PROTEGIDAS - ADMIN
+{
+  element: <AdminRoute />,
+  children: [
+    { path: "/logistica", element: <LogisticsDashboard /> },
+    // outros paths de admin se quiser
+  ],
+},
+
   {
     path: "/edit",
     element: (

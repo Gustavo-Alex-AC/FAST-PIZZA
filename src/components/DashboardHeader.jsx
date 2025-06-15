@@ -1,7 +1,18 @@
 import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
+
 import logo from "../assets/logoWhite.svg";
 
 function DashboardHeader({ abaAtiva, setAbaAtiva }) {
+  const { isAuthenticated, tipo } = useSelector((s) => s.user);
+
+  function handleLogout() {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    window.location.reload(); // ou usar navegação programática
+  }
+
+
   return (
     <header className="bg-yellow-400 shadow-md py-4 px-10 sticky top-0 z-50">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -35,6 +46,18 @@ function DashboardHeader({ abaAtiva, setAbaAtiva }) {
           >
             Stock
           </li>
+
+          {/* Link para painel logístico visível apenas para admins logados */}
+          {isAuthenticated && tipo === "admin" && (
+            
+              <button
+            className="block w-full px-4 py-2 text-left hover:bg-yellow-100"
+            onClick={handleLogout}
+          >
+            Terminar Sessão
+          </button>
+            
+          )}
         </ul>
       </div>
     </header>
