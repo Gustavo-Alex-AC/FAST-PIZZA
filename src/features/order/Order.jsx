@@ -44,7 +44,7 @@ function Order() {
 
       <div className="text-sm text-stone-700">
         <p>
-          <span className="font-medium">Endereço:</span> {endereco?.casa},
+          <span className="font-medium">Endereço:</span> {endereco?.bairro},
           {endereco?.rua}
         </p>
         <p>
@@ -75,7 +75,23 @@ function Order() {
 
       {estado !== "cancelado" && (
         <fetcher.Form method="PATCH" action={`/order/${id}/cancel`}>
-          <Button type="secondary" disabled={isCancelling}>
+          {/* <Button type="secondary" disabled={isCancelling}>
+            {isCancelling ? "Cancelando..." : "Cancelar Pedido"}
+          </Button> */}
+          <Button
+            type="secondary"
+            disabled={isCancelling}
+            onClick={() => {
+              if (typeof window.gtag === "function") {
+                window.gtag("event", "pedidos_cancelados", {
+                  order_id: id,
+                  status: estado,
+                  value: total,
+                  currency: "AOA", // or "USD" based on your app
+                });
+              }
+            }}
+          >
             {isCancelling ? "Cancelando..." : "Cancelar Pedido"}
           </Button>
         </fetcher.Form>

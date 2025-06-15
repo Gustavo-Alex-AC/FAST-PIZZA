@@ -6,6 +6,8 @@ import { getCurrentQuantityById, addItemToServer } from "../cart/CartSlice";
 import DeleteItem from "../cart/DeleteItem";
 import UpdateItemQuantity from "../cart/UpdateItemQuantity";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useRef } from "react";
 
 function MenuItem({ pizza }) {
   const navigate = useNavigate();
@@ -32,13 +34,46 @@ function MenuItem({ pizza }) {
     }
   }
 
+  const timeRef = useRef(Date.now());
+
+  useEffect(() => {
+    return () => {
+      const timeSpent = Math.round((Date.now() - timeRef.current) / 1000); // in seconds
+
+      if (typeof window.gtag === "function" && timeSpent > 1) {
+        window.gtag("event", "duracao_item_visualizar", {
+          item_id: pizza.id,
+          item_name: pizza.name,
+          item_category: pizza.category || "Uncategorized",
+          time_spent: timeSpent,
+        });
+      }
+    };
+  }, [pizza.id, pizza.name, pizza.category]);
+
   return (
     <li className="flex flex-col justify-between rounded-2xl border border-stone-200 bg-white p-4 shadow-sm transition hover:shadow-md">
       {/* Imagem */}
       <div className="h-44 overflow-hidden rounded-xl">
+        {/* <img
+          src={pizza.imageUrl}
+          alt={pizza.name}
+          className={`h-full w-full object-cover transition duration-200 ${
+            pizza.soldOut ? "opacity-50 grayscale" : ""
+          }`}
+        /> */}
         <img
           src={pizza.imageUrl}
           alt={pizza.name}
+          onClick={() => {
+            if (typeof window.gtag === "function") {
+              window.gtag("event", "clique_image_pizza", {
+                item_id: pizza.id,
+                item_name: pizza.name,
+                item_category: pizza.category || "Uncategorized",
+              });
+            }
+          }}
           className={`h-full w-full object-cover transition duration-200 ${
             pizza.soldOut ? "opacity-50 grayscale" : ""
           }`}
@@ -81,7 +116,23 @@ function MenuItem({ pizza }) {
           </div>
         ) : (
           !pizza.soldOut && (
-            <Button type="small" onClick={handleAddToCart}>
+            <Button
+              type="small"
+              onClick={() => {
+                if (typeof window.gtag === "function") {
+                  window.gtag("event", "adicionar_ao_carrinho", {
+                    item_id: pizza.id,
+                    item_name: pizza.name,
+                    price: pizza.unitPrice,
+                    category: pizza.category || "undefined",
+                    size: pizza.size || "undefined",
+                    currency: "AOA", // Change if you use a different currency
+                  });
+                }
+
+                handleAddToCart();
+              }}
+            >
               Adicionar
             </Button>
           )
@@ -105,3 +156,7 @@ MenuItem.propTypes = {
 };
 
 export default MenuItem;
+
+/* <Button type="small" onClick={handleAddToCart}>
+              Adicionar
+            </Button> */

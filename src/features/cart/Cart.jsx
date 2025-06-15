@@ -32,10 +32,27 @@ function Cart() {
 
         <Button
           type="secondary"
+          onClick={() => {
+            // Limpa o carrinho no servidor
+            dispatch(clearCartOnServer(userId));
+
+            // Rastreia o evento no Google Analytics
+            window.gtag &&
+              window.gtag("event", "limpar_carrinho", {
+                event_category: "Cart",
+                event_label: "Carrinho limpo pelo usuário",
+              });
+          }}
+        >
+          Limpar carrinho
+        </Button>
+
+        {/* <Button
+          type="secondary"
           onClick={() => dispatch(clearCartOnServer(userId))}
         >
           Limpar carinho
-        </Button>
+        </Button> */}
       </div>
     </div>
   );

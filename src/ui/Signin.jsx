@@ -31,7 +31,17 @@ function Signin() {
       <div className="flex cursor-pointer items-center justify-center gap-2 rounded bg-white p-3 shadow">
         {!nome ? (
           <button
-            onClick={() => setShowLogin(true)}
+            onClick={() => {
+              // Rastreia o clique no botão de login
+              window.gtag &&
+                window.gtag("event", "login_click", {
+                  event_category: "User",
+                  event_label: "Botão Entrar (Login)",
+                });
+
+              // Continua com a ação de mostrar o modal de login
+              setShowLogin(true);
+            }}
             className="flex items-center gap-2 font-medium text-yellow-600 hover:underline"
           >
             <GoSignIn className="text-xl text-yellow-600" />
@@ -54,3 +64,11 @@ function Signin() {
 }
 
 export default Signin;
+
+/* <button
+            onClick={() => setShowLogin(true)}
+            className="flex items-center gap-2 font-medium text-yellow-600 hover:underline"
+          >
+            <GoSignIn className="text-xl text-yellow-600" />
+            Entrar
+          </button> */

@@ -47,10 +47,10 @@ function CreateOrder() {
           type="primary"
           disabled={isSubmitting}
           onClick={() => {
-            if (window.gtag) {
-              window.gtag("event", "click", {
-                event_category: "Checkout",
-                event_label: "Finalizar Pedido",
+            if (typeof window.gtag === "function") {
+              window.gtag("event", "pedidos_finalizados", {
+                value: totalCartPrice,
+                currency: "AOA", // or "USD"
               });
             }
           }}
