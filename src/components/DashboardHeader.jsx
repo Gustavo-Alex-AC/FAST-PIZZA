@@ -1,7 +1,11 @@
 import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import logo from "../assets/logoWhite.svg";
 
 function DashboardHeader({ abaAtiva, setAbaAtiva }) {
+  const { isAuthenticated, tipo } = useSelector((s) => s.user);
+
   return (
     <header className="bg-yellow-400 shadow-md py-4 px-10 sticky top-0 z-50">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -35,6 +39,18 @@ function DashboardHeader({ abaAtiva, setAbaAtiva }) {
           >
             Stock
           </li>
+
+          {/* Link para painel logístico visível apenas para admins logados */}
+          {isAuthenticated && tipo === "admin" && (
+            <li>
+              <Link
+                to="/logistica"
+                className="px-2 py-1 text-yellow-900 hover:underline"
+              >
+                Painel Logística
+              </Link>
+            </li>
+          )}
         </ul>
       </div>
     </header>

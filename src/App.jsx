@@ -18,6 +18,7 @@ import FormLogin from "./ui/FormLogin";
 import Edit from "./features/user/Edit";
 import LogisticsDashboard from "./pages/LogisticsDashboard";
 import RotaProtegida from "./features/user/RotaProtegida";
+import AdminRoute from "./ui/AdminRoute";
 
 const router = createBrowserRouter([
   // 🔹 Rotas sem layout
@@ -27,9 +28,10 @@ const router = createBrowserRouter([
     errorElement: <Error />,
   },
   {
-    path: "/logistica",
-    element: <LogisticsDashboard />,
-    errorElement: <Error />,
+    element: <AdminRoute />,     // proteção
+    children: [
+      { path: "/logistica", element: <LogisticsDashboard /> },
+    ],
   },
   {
     path: "/edit",
