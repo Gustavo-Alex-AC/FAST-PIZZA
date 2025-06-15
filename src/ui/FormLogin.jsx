@@ -7,11 +7,10 @@ import { loginUser } from "../features/user/userSlice";
 
 function FormLogin({ showLogin, onClose }) {
   const dispatch = useDispatch();
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
 
-  const [form, setForm]       = useState({ email: "", senha: "" });
-  const [errorMsg, setError]  = useState("");
-
+  const [form, setForm] = useState({ email: "", senha: "" });
+  const [errorMsg, setError] = useState("");
   const status = useSelector((state) => state.user.status);
 
   if (!showLogin) return null;
@@ -27,12 +26,11 @@ function FormLogin({ showLogin, onClose }) {
       const result = await dispatch(loginUser(form));
 
       if (loginUser.fulfilled.match(result)) {
-        const { tipo } = result.payload;   // <-- vem do backend
+        const { tipo } = result.payload;
 
         onClose();
         setForm({ email: "", senha: "" });
 
-        // redireciona conforme o tipo
         navigate(tipo === "admin" ? "/logistica" : "/");
       } else {
         setError("Email ou senha incorretos.");
@@ -114,7 +112,7 @@ function FormLogin({ showLogin, onClose }) {
 
 FormLogin.propTypes = {
   showLogin: PropTypes.bool.isRequired,
-  onClose:    PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default FormLogin;

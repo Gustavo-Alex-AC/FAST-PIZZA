@@ -1,12 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-// import { getAddress } from "../../services/apiGeocoding"; // ❌ deixamos geocoding comentado
-
-// function getPosition() {
-//   return new Promise(function (resolve, reject) {
-//     navigator.geolocation.getCurrentPosition(resolve, reject);
-//   });
-// }
 
 export const loginUser = createAsyncThunk(
   "user/loginUser",
@@ -23,12 +16,10 @@ export const loginUser = createAsyncThunk(
       const { token, usuario } = response.data;
       console.log("Usuário recebido da API:", usuario);
 
-
-      // Armazenar no localStorage também (opcional)
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(usuario));
 
-      return { ...usuario, token };
+      return { ...usuario, token }; // inclui tipo
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.mensagem || "Erro ao fazer login",
@@ -37,34 +28,16 @@ export const loginUser = createAsyncThunk(
   },
 );
 
-// ❗ Deixamos esse fetchAddress comentado, como você pediu
-// export const fetchAddress = createAsyncThunk(
-//   "user/fetchAddress",
-//   async function () {
-//     const positionObj = await getPosition();
-//     const position = {
-//       latitude: positionObj.coords.latitude,
-//       longitude: positionObj.coords.longitude,
-//     };
-
-//     const addressObj = await getAddress(position);
-//     const address = `${addressObj?.locality}, ${addressObj?.city} ${addressObj?.postcode}, ${addressObj?.countryName}`;
-
-//     return { position, address };
-//   },
-// );
-
 const initialState = {
   id: null,
   nome: "",
-  sobrenome:"",
+  sobrenome: "",
   email: "",
+  tipo: "",            // 👈 Adicionado
   token: "",
   isAuthenticated: false,
   status: "idle",
   error: "",
-  // position: {},
-  // address: "",
 };
 
 const userSlice = createSlice({
@@ -74,19 +47,21 @@ const userSlice = createSlice({
     logout(state) {
       state.id = null;
       state.nome = "";
-      state.sobrenome ="",
+      state.sobrenome = "";
       state.email = "";
+      state.tipo = "";          // 👈 Limpar tipo também
       state.token = "";
       state.isAuthenticated = false;
       localStorage.removeItem("token");
       localStorage.removeItem("user");
     },
     setUserFromStorage(state, action) {
-      const { id, nome, sobrenome,email, token } = action.payload;
+      const { id, nome, sobrenome, email, tipo, token } = action.payload;
       state.id = id;
       state.nome = nome;
       state.sobrenome = sobrenome;
       state.email = email;
+      state.tipo = tipo;        // 👈 Setar tipo
       state.token = token;
       state.isAuthenticated = true;
     },
@@ -97,11 +72,12 @@ const userSlice = createSlice({
         state.status = "loading";
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        const { id, nome,sobrenome, email, token } = action.payload;
+        const { id, nome, sobrenome, email, tipo, token } = action.payload;
         state.id = id;
         state.nome = nome;
         state.sobrenome = sobrenome;
         state.email = email;
+        state.tipo = tipo;      // 👈 Salvar tipo no estado
         state.token = token;
         state.isAuthenticated = true;
         state.status = "succeeded";

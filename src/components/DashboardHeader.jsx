@@ -1,10 +1,17 @@
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+
 import logo from "../assets/logoWhite.svg";
 
 function DashboardHeader({ abaAtiva, setAbaAtiva }) {
   const { isAuthenticated, tipo } = useSelector((s) => s.user);
+
+  function handleLogout() {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    window.location.reload(); // ou usar navegação programática
+  }
+
 
   return (
     <header className="bg-yellow-400 shadow-md py-4 px-10 sticky top-0 z-50">
@@ -42,14 +49,14 @@ function DashboardHeader({ abaAtiva, setAbaAtiva }) {
 
           {/* Link para painel logístico visível apenas para admins logados */}
           {isAuthenticated && tipo === "admin" && (
-            <li>
-              <Link
-                to="/logistica"
-                className="px-2 py-1 text-yellow-900 hover:underline"
-              >
-                Painel Logística
-              </Link>
-            </li>
+            
+              <button
+            className="block w-full px-4 py-2 text-left hover:bg-yellow-100"
+            onClick={handleLogout}
+          >
+            Terminar Sessão
+          </button>
+            
           )}
         </ul>
       </div>
