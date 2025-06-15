@@ -17,9 +17,10 @@ import CreateUser from "./features/user/CreateUser";
 import FormLogin from "./ui/FormLogin";
 import Edit from "./features/user/Edit";
 import LogisticsDashboard from "./pages/LogisticsDashboard";
+import RotaProtegida from "./features/user/RotaProtegida";
 
 const router = createBrowserRouter([
-  // 🔹 Rota sem layout
+  // 🔹 Rotas sem layout
   {
     path: "/user",
     element: <CreateUser />,
@@ -32,7 +33,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/edit",
-    element: <Edit />,
+    element: (
+      <RotaProtegida>
+        <Edit />
+      </RotaProtegida>
+    ),
     errorElement: <Error />,
   },
   {
@@ -41,33 +46,51 @@ const router = createBrowserRouter([
     errorElement: <Error />,
   },
 
-  // 🔹 Rotas com layout AppLayout
+  // 🔹 Rotas com layout
   {
     element: <AppLayout />,
     errorElement: <Error />,
-
     children: [
-      { path: "/", element: <Home /> },
+      {
+        path: "/",
+        element: <Home />,
+      },
       {
         path: "/menu",
-        element: <Menu />,
+        element: (
+          <RotaProtegida>
+            <Menu />
+          </RotaProtegida>
+        ),
         loader: menuLoader,
         errorElement: <Error />,
       },
       {
         path: "/cart",
-        element: <Cart />,
+        element: (
+          <RotaProtegida>
+            <Cart />
+          </RotaProtegida>
+        ),
         loader: fetchCartFromServer,
         errorElement: <Error />,
       },
       {
         path: "/order/new",
-        element: <CreateOrder />,
+        element: (
+          <RotaProtegida>
+            <CreateOrder />
+          </RotaProtegida>
+        ),
         action: createOrderAction,
       },
       {
         path: "/order/:orderId",
-        element: <Order />,
+        element: (
+          <RotaProtegida>
+            <Order />
+          </RotaProtegida>
+        ),
         loader: orderLoader,
         errorElement: <Error />,
         action: updateOrderAction,

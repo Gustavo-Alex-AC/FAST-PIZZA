@@ -13,7 +13,10 @@ import { useSelector } from "react-redux";
 function Order() {
   const order = useLoaderData();
   const fetcher = useFetcher();
-  const nome = useSelector((state) => state.user.nome);
+  //const nome = useSelector((state) => state.user.nome);
+  const user = useSelector((state) => state.user);
+
+  const nome = user.nome;
 
   const {
     id,
